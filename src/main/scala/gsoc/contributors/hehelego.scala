@@ -32,7 +32,7 @@ def SequenceBuilder(): Resource[IO, HtmlDivElement[IO]] =
           ))),
       ul(
         children <-- seq.map(_.map(x => li(x.toString)).sequence)
-      ),
+      )
     )
   }
 
