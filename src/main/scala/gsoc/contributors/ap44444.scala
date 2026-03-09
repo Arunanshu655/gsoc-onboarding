@@ -13,7 +13,12 @@ val ap44444: Contributor = Contributor("ap44444"):
   case class Dot(handle: String, x: Double, y: Double, vx: Double, vy: Double)
 
   def makeDot(handle: String, i: Int): Dot =
-    Dot(handle, 50 + (i * 37) % 300, 50 + (i * 53) % 200, 1.5 + (i % 3) * 0.5, 1.0 + (i % 2) * 0.5)
+    Dot(
+      handle,
+      50 + (i * 37) % 300,
+      50 + (i * 53) % 200,
+      1.5 + (i % 3) * 0.5,
+      1.0 + (i % 2) * 0.5)
 
   def bounce(d: Dot): Dot =
     val nx = d.x + d.vx
@@ -25,13 +30,18 @@ val ap44444: Contributor = Contributor("ap44444"):
   case class State(dots: List[Dot], meAdded: Boolean)
 
   IO {
-    allContributors.toList.filterNot(_.handle == "ap44444").zipWithIndex.map { case (c, i) => makeDot(c.handle, i) }
+    allContributors.toList.filterNot(_.handle == "ap44444").zipWithIndex.map {
+      case (c, i) => makeDot(c.handle, i)
+    }
   }.toResource.flatMap { others =>
     SignallingRef[IO].of(State(others, false)).toResource.flatMap { state =>
-      val ticker = fs2.Stream
+      val ticker = fs2
+        .Stream
         .fixedRate[IO](50.millis)
         .evalMap(_ => state.update(s => s.copy(dots = s.dots.map(bounce))))
-        .compile.drain.background
+        .compile
+        .drain
+        .background
 
       ticker.flatMap { _ =>
         div(
@@ -40,10 +50,11 @@ val ap44444: Contributor = Contributor("ap44444"):
             button(
               onClick --> (_.foreach(_ =>
                 if s.meAdded then
-                  state.update(s => s.copy(dots = s.dots.filterNot(_.handle == "ap44444"), meAdded = false))
+                  state.update(s =>
+                    s.copy(dots = s.dots.filterNot(_.handle == "ap44444"), meAdded = false))
                 else
-                  state.update(s => s.copy(dots = s.dots :+ makeDot("ap44444", 99), meAdded = true))
-              )),
+                  state.update(s =>
+                    s.copy(dots = s.dots :+ makeDot("ap44444", 99), meAdded = true)))),
               if s.meAdded then "Take me out :(" else "Add me!"
             )
           },
@@ -54,7 +65,11 @@ val ap44444: Contributor = Contributor("ap44444"):
               s.dots.map { d =>
                 val isMe = d.handle == "ap44444"
                 div(
-                  styleAttr := s"position: absolute; left: ${d.x}px; top: ${d.y}px; transform: translate(-50%,-50%); font-size: 0.65rem; color: ${if isMe then "#ffdd00" else "white"}; background: ${if isMe then "#554400" else "#333"}; padding: 2px 4px; border-radius: 4px; white-space: nowrap;",
+                  styleAttr := s"position: absolute; left: ${d.x}px; top: ${d.y}px; transform: translate(-50%,-50%); font-size: 0.65rem; color: ${
+                      if isMe then "#ffdd00" else "white"
+                    }; background: ${
+                      if isMe then "#554400" else "#333"
+                    }; padding: 2px 4px; border-radius: 4px; white-space: nowrap;",
                   d.handle
                 )
               }
