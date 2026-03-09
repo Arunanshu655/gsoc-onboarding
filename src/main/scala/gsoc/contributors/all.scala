@@ -5,10 +5,12 @@ import cats.data.NonEmptyList
 
 // the order matters! Check step 5 of the README for details.
 val allContributors = NonEmptyList.of(
+  gfinol,
   hehelego,
   synan_mannan,
   antoniojimeneznieto,
   `tanmay_008`,
+  jnnfrpyn,
   `typelevel-bot`,
   `im-vedant`,
   abby_ql,
@@ -17,6 +19,7 @@ val allContributors = NonEmptyList.of(
   `scala-steward`,
   `the-ivii`,
   `piyush-t24`,
+  malladinagarjuna2,
   valencik,
   `zayd-r`,
   loladenney,
