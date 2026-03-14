@@ -20,7 +20,10 @@ val kierinbell: Contributor = Contributor("kierinbell"):
     }
   }
 
-  def makeDateOutput(name: String, outputForId: String, date: Option[LocalDate]): Resource[IO, HtmlElement[IO]] =
+  def makeDateOutput(
+      name: String,
+      outputForId: String,
+      date: Option[LocalDate]): Resource[IO, HtmlElement[IO]] =
     outputTag(
       nameAttr := name,
       forId := outputForId,
@@ -111,9 +114,7 @@ val kierinbell: Contributor = Contributor("kierinbell"):
         h3("About me"),
         addressTag(
           "I'm ",
-          a(
-            href := "https://github.com/kierinbell",
-            "@kierinbell"),
+          a(href := "https://github.com/kierinbell", "@kierinbell"),
           " on GitHub."
         ),
         p(
@@ -141,19 +142,20 @@ val kierinbell: Contributor = Contributor("kierinbell"):
                 idAttr := "date",
                 typ := "date",
                 value := today.toString,
-                onInput --> (_.foreach (_ =>
-                  self.value.get.flatMap(value =>
-                    val parsed = LocalDate.parse(value)
-                    period.set(periods.find(_.contains(parsed)))
-                  )
-                ))
+                onInput --> (_.foreach(_ =>
+                  self
+                    .value
+                    .get
+                    .flatMap(value =>
+                      val parsed = LocalDate.parse(value)
+                      period.set(periods.find(_.contains(parsed))))))
               )
             },
             label(
               forId := "period-select",
               "Period: "
             ),
-            select.withSelf{ self =>
+            select.withSelf { self =>
               (
                 idAttr := "period-select",
                 option(
@@ -162,18 +164,14 @@ val kierinbell: Contributor = Contributor("kierinbell"):
                   value := "",
                   "N/A"
                 ),
-                periods.map ( period =>
+                periods.map(period =>
                   option(
                     value := period.name,
                     period.name
-                  )
-                ),
+                  )),
                 value <-- period.map(_.map(_.name)),
-                onChange --> (_.foreach (_ =>
-                  self.value.get.flatMap(value =>
-                    period.set(periods.find(_.name == value))
-                  )
-                ))
+                onChange --> (_.foreach(_ =>
+                  self.value.get.flatMap(value => period.set(periods.find(_.name == value)))))
               )
             }
           ),
@@ -185,12 +183,14 @@ val kierinbell: Contributor = Contributor("kierinbell"):
               forId := "period-start",
               "Start date: "
             ),
-            period.map(p => makeDateOutput("period-start", "date period-select", p.map(_.startDate))),
+            period.map(p =>
+              makeDateOutput("period-start", "date period-select", p.map(_.startDate))),
             label(
               forId := "period-end",
               "End date: "
             ),
-            period.map(p => makeDateOutput("period-end", "date period-select", p.map(_.endDate))),
+            period
+              .map(p => makeDateOutput("period-end", "date period-select", p.map(_.endDate))),
             period.map {
               case Some(p) if p.contains(today) =>
                 val start = p.startDate
